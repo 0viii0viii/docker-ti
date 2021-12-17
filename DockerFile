@@ -1,0 +1,8 @@
+FROM influxdb:latest
+FROM telegraf:1.8
+
+USER root
+
+RUN apt update && apt install vim -y
+
+

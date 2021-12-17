@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    build:
+      context: .
+      dockerfile: ./DockerFile
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_REPORTING_DISABLED=false
+    volumes:
+      - influxdb:/var/lib/influxdb2
+      - influxdb:/etc/influxdb2
+      
+  telegraf:
+    image: telegraf:1.8
+    container_name: telegraf
+    build:
+      context: .
+      dockerfile: ./DockerFile
+    ports:
+      - "6514:6514/udp"
+    privileged: true
+    restart: always
+    environment:
+      - HOST_PROC=/rootfs/proc
+      - HOST_SYS=/rootfs/sys
+      - HOST_MOUNT_PREFIX=/rootfs
+    volumes:
+      - /:/rootfs:ro
+      - /proc:/rootfs/proc:ro
+      - /sys:/rootfs/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - C:/dev/docker-tig2/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+      - telegraf:/var/lib/telegraf/data
+
+volumes:
+  influxdb:
+  telegraf:
